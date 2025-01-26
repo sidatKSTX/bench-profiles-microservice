@@ -12,7 +12,7 @@ import java.util.List;
 @FeignClient(name = "common-excel-service", url = "${excel.processor.url}")
 public interface ExcelServiceProxy {
 
-    @PostMapping(value = "/api/excel/process", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/api/process/benchprofiles", consumes = {"multipart/form-data"})
     List<BenchProfilesEntity> processExcel(@RequestPart("file") MultipartFile file,
                                            @RequestParam("sheetIndex") int sheetIndex);
 }
