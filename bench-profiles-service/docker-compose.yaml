@@ -1,0 +1,65 @@
+services:
+  #  user-details, api-gateway, naming-server, spring-cloud-config, postgres, zipkin, prometheus, grafana
+
+  daily-submissions:
+    image: bhargavivennam/bench-profiles-image:latest
+    ports:
+      - "8083:8083"
+    networks:
+      - consulting_firm_network
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/$POSTGRES_DB
+      SPRING_DATASOURCE_USERNAME: $POSTGRES_USER
+      SPRING_DATASOURCE_PASSWORD: $POSTGRES_PASSWORD
+
+  naming-server:
+    image: bhargavivennam/naming-server-ga:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - consulting_firm_network
+
+  zipkin-server:
+    image: openzipkin/zipkin:2.23.8
+    ports:
+      - "9411:9411"
+    networks:
+      - consulting_firm_network
+    restart: always #Restart if there is a problem starting up
+
+  prometheus:
+    image: linuxtips/prometheus_alpine
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: always
+
+  grafana:
+    image: grafana/grafana:9.3.6
+    ports:
+      - '3001:3000'
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: always
+
+volumes:
+  postgres_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  consulting_firm_network:
+    driver: bridge
