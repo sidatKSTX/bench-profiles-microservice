@@ -10,16 +10,20 @@ name: BenchProfiles CI
 
 on:
   push:
-    branches: 
-      - '**'
-    
-  pull_request:
-    branches:
-      - '**'
+    branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
+
+env:
+  ECR_REGISTRY: 818140567777.dkr.ecr.us-west-1.amazonaws.com
+  ECR_REPOSITORY: consultancyfirm/unsecure
+  IMAGE_TAG: ${{ github.sha }}
+  AWS_REGION: us-west-1
+  UNIQUE_TAG: ${{ github.sha }}-${{ github.run_number }}
 
 jobs:
   build:
-    name: Build on ${{ github.ref_name }}  # Example: "Build on feature-123"
+    name: Build on ${{ github.ref_name }}
     runs-on: ubuntu-latest
 
     steps:
@@ -33,31 +37,54 @@ jobs:
     - name: Build with Maven
       run: mvn -B package -DskipTests
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/user-details-ga:${{ github.sha }} .      
-    
-    - name: Push Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/user-details-ga:${{ github.sha }}
+    - name: Build and Push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/bench-profiles-service:latest
 
-    - name: Tag the image with 'latest'
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
       run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/user-details-ga:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/user-details-ga:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/user-details-ga:latest
-  
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.IMAGE_TAG }} \
+             -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.UNIQUE_TAG }} .
+        docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.UNIQUE_TAG }}
+
     - name: Run Docker Scout Action
       uses: docker/scout-action@v1
       with:
-          command: quickview,cves,recommendations
-          organization: bhargavivennam
-          # token: ${{ secrets.DOCKER_SCOUT_TOKEN }}  # Make sure you have this token set in your secrets
-          image: ${{ secrets.DOCKER_USERNAME }}/user-details-ga:latest 
+        command: quickview,cves,recommendations
+        organization: ${{ secrets.DOCKER_USERNAME }}
+        # token: ${{ secrets.DOCKER_SCOUT_TOKEN }}  # Make sure you have this token set in your secrets
+        image: ${{ secrets.DOCKER_USERNAME }}/bench-profiles-service:latest
 
+    - name: Run Trivy Vulnerability Scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: '${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:bench-profiles-service'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
