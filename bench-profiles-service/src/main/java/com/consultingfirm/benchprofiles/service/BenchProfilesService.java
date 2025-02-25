@@ -23,4 +23,6 @@ public interface BenchProfilesService {
 
     void deleteUserInfoById(long id);
 
+    List<BenchProfilesEntity> getPaginatedBenchProfiles(int page, int size, String sort);
+
 }
