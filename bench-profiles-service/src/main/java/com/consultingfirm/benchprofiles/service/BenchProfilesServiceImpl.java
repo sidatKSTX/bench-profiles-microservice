@@ -31,7 +31,7 @@ public class BenchProfilesServiceImpl implements BenchProfilesService {
     @Override
     public void uploadUserDetails(MultipartFile file, int sheetIndex) {
         if (!isExcelFile(file)) {
-            System.out.println("Please upload an Excel file");
+            throw new IllegalArgumentException("Please upload an Excel file");
         }
 
         try {
