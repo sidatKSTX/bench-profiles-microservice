@@ -52,34 +52,34 @@ services:
       - consulting_firm_network
     restart: always #Restart if there is a problem starting up
 
-  prometheus:
-    image: linuxtips/prometheus_alpine
-    ports:
-      - '9090:9090'
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    restart: always
-
-  grafana:
-    image: grafana/grafana:9.3.6
-    ports:
-      - '3001:3000'
-    depends_on:
-      - prometheus
-    volumes:
-      - grafana_data:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    restart: always
+#  prometheus:
+#    image: linuxtips/prometheus_alpine
+#    ports:
+#      - '9090:9090'
+#    volumes:
+#      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#    restart: always
+#
+#  grafana:
+#    image: grafana/grafana:9.3.6
+#    ports:
+#      - '3001:3000'
+#    depends_on:
+#      - prometheus
+#    volumes:
+#      - grafana_data:/var/lib/grafana
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=admin
+#      - GF_SECURITY_ADMIN_PASSWORD=admin
+#    restart: always
 
 volumes:
   postgres_data:
     driver: local
-  grafana_data:
-    driver: local
+#  grafana_data:
+#    driver: local
 
 networks:
   consulting_firm_network:
