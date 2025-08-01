@@ -1,0 +1,11 @@
+# Trivy Ignore File
+# This file contains vulnerability IDs that should be ignored during security scans
+# Format: CVE-YYYY-NNNN or GHSA-XXXX-XXXX-XXXX
+
+# HIGH severity vulnerabilities have been fixed by updating dependencies:
+# - CVE-2025-22235: Spring Boot 3.4.1 → 3.4.5 
+# - CVE-2025-49146: PostgreSQL driver → 42.7.7
+# - CVE-2025-22228: Spring Security (updated via Spring Boot parent)
+
+# MEDIUM and LOW severity vulnerabilities are allowed by the security gate
+# No ignores needed - they don't cause pipeline failures

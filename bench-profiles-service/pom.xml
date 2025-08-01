@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-boot-admin.version>3.4.1</spring-boot-admin.version>
+        <spring-boot-admin.version>3.4.5</spring-boot-admin.version>
         <springdoc-openapi.version>2.7.0</springdoc-openapi.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
@@ -73,6 +73,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>42.7.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
