@@ -16,6 +16,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   SERVICE_DIRECTORY: "bench-profiles-service"
   SONAR_PROJECT_KEY: "sidatKSTX_bench-profiles-microservice"
+  SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
   AWS_REGION: "us-east-1"
 
 jobs:
@@ -52,7 +53,7 @@ jobs:
         working-directory: ./${{ env.SERVICE_DIRECTORY }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
 
   build-and-scan:
     name: Build and Security Scan
