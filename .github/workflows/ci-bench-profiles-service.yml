@@ -192,7 +192,9 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v ${{ github.workspace }}:/workspace \
+            -v ${{ github.workspace }}/${{ env.SERVICE_DIRECTORY }}/.trivyignore:/tmp/.trivyignore \
             aquasec/trivy:latest image \
+            --ignorefile /tmp/.trivyignore \
             --format json \
             --output /workspace/trivy-comprehensive-results.json \
             "${{ env.IMAGE_URI }}"
