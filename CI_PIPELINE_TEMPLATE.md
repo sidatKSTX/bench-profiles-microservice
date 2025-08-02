@@ -12,7 +12,7 @@ Create a comprehensive GitHub Actions CI/CD pipeline for a Spring Boot microserv
 ## Configuration Parameters:
 - **Java Version**: 21
 - **Service Directory**: `[SERVICE_NAME]`
-- **ECR Repository**: `[SERVICE_NAME]`
+- **ECR Repository**: `[ORGANIZATION]/[SERVICE_NAME]`
 - **SonarQube Project Key**: `[GITHUB_ORG]_[REPO_NAME]`
 - **SonarQube Organization**: Use `${{ secrets.SONAR_ORGANIZATION }}`  ✅ CRITICAL
 - **AWS Region**: us-east-1
@@ -46,7 +46,7 @@ env:
   JAVA_VERSION: "21"
   MAVEN_OPTS: "-Xmx1024m"
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPOSITORY: [SERVICE_NAME]
+  ECR_REPOSITORY: [ORGANIZATION]/[SERVICE_NAME]
   IMAGE_TAG: ${{ github.sha }}
   SERVICE_DIRECTORY: "[SERVICE_DIRECTORY]"
   SONAR_PROJECT_KEY: "[GITHUB_ORG]_[REPO_NAME]"

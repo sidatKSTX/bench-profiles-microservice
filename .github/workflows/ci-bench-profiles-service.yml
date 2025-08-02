@@ -12,7 +12,7 @@ env:
   JAVA_VERSION: "21"
   MAVEN_OPTS: "-Xmx1024m"
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPOSITORY: bench-profiles-service
+  ECR_REPOSITORY: consultingfirm/bench-profiles-service
   IMAGE_TAG: ${{ github.sha }}
   SERVICE_DIRECTORY: "bench-profiles-service"
   SONAR_PROJECT_KEY: "sidatKSTX_bench-profiles-microservice"
